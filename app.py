@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask
+from flask import render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 # if you use TimeZone
@@ -19,6 +20,21 @@ class Post(db.Model):
 @app.route('/')
 def index():
     return render_template("index.html")
+
+
+@app.route('/create', methods=['GET', 'POST'])
+def create():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        body = request.form.get('body')
+
+        post = Post(title=title, body=body)
+
+        db.session.add(post)
+        db.session.commit()
+        return redirect('/')
+    else:
+        return render_template("create.html")
 
 
 if __name__ == '__main__':
